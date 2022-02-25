@@ -2,7 +2,7 @@
 
 Created by Zachary Russ
 
-## Built Targets
+## Build Targets
 
 Please do not use **movie**, **vid**, or **pic**. These were used to create the images and video seen in the project report. They require a certain directory structure, as well as a few dependencies.
 
