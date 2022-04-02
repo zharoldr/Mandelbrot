@@ -1,0 +1,112 @@
+body {
+    background-color: black;
+}
+
+p, h1, h2, li {
+    color: white;
+    text-align: center;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 210px 210px 210px;
+    grid-template-rows: 210px 210px 210px;
+
+    box-sizing: border-box;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    justify-content: center;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+
+    padding-bottom: 100px;
+}
+
+.grid-element {
+    box-sizing: border-box;
+
+    width: 200px;
+    height: 200px;
+}
+
+.grid-element img {
+    width: 200px;
+    height: 200px;
+}
+
+.text-and-pic {
+    display: grid;
+    grid-template-columns: 415px 415px;
+
+    box-sizing: border-box;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    margin-bottom: 100px;
+
+    justify-content: center;
+    justify-items: center;
+    align-content: center;
+    align-items: top;
+}
+
+.column-text {
+    box-sizing: border-box;
+
+    width: 400px;
+}
+
+.column-text p, li {
+    text-align: left;
+}
+
+.column-pic img {
+    box-sizing: border-box;
+
+    width: 400px;
+}
+
+.column-text .image-drop img{
+    box-sizing: border-box;
+
+    width: 400px;
+}
+
+.full-text {
+    box-sizing: border-box;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    width: 800px;
+}
+
+.full-text h2 {
+    text-align: center;
+}
+
+.full-text p {
+    text-align: left;
+}
+
+.full-text .pic-side-by-side {
+    display: grid;
+    grid-template-columns: auto auto;
+
+    box-sizing: border-box;
+}
+
+.full-text .pic-top-on-bottom {
+    display: grid;
+    grid-template-rows: auto auto;
+
+    box-sizing: border-box;
+}
+
+.full-text .pic-side-by-side img {
+    padding: 15px;
+}

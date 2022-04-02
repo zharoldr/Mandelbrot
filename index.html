@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href="css/style.css"/>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <title>MANDELBROT ART</title>
+</head>
+<body>
+    <h1>Mandelbrot Art</h1>
+    <h2>Created<br>by<br>Zachary Russ</h2>
+    <div class="grid-container">
+        <div class="grid-element">
+            <video width="200" height="200" loop autoplay muted>
+                <source src="videos/snail.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="grid-element">
+            <video width="200" height="200" loop autoplay muted>
+                <source src="videos/cracks.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="grid-element">
+            <video width="200" height="200" loop autoplay muted>
+                <source src="videos/roach.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="grid-element">
+            <video width="200" height="200" loop autoplay muted>
+                <source src="videos/elephant.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="grid-element">
+            <video width="200" height="200" loop autoplay muted>
+                <source src="videos/spin.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="grid-element">
+            <video width="200" height="200" loop autoplay muted>
+                <source src="videos/starfish.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="grid-element">
+            <video width="200" height="200" loop autoplay muted>
+                <source src="videos/spiral.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="grid-element">
+            <video width="200" height="200" loop autoplay muted>
+                <source src="videos/brots.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="grid-element">
+            <video width="200" height="200" loop autoplay muted>
+                <source src="videos/dots.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <div class="text-and-pic">
+        <div class="column-text">
+            <h2>The Project</h2>
+            <p>I wanted to create a program that would allow me to create beautiful images using data from the Mandelbrot set, a fascinating piece of mathematics.</p>
+            <p>Although I started out using my own complex number class, I discovered that doing the complex number math explicitly with two doubles runs a bit faster.</p>
+            <p>Once I had things working, I began experimenting with different drawing, coloring, and reconstruction techniques.</p>
+        </div>
+        <div class="column-pic">
+            <img src="images/full.png">
+        </div>
+    </div>
+
+    <div class="text-and-pic">
+        <div class="column-pic">
+            <img src="images/no_skip.png">
+            <img src="images/03_skip.png">
+            <img src="images/dynamic_skip.png">
+        </div>
+        <div class="column-text">
+            <h2>Drawing Techniques</h2>
+            <p>Early on while testing my program, it became clear that I needed to significantly speed up draw time to keep my program interactive while zoomed in close to the fractal's border.</p>
+            <p>Instead of doing the complex number calculations for every pixel in the image (top), I could instead do every other pixel. This would cut the number of calculations while leaving gaps in the image.</p>
+            <p>These gaps could then be filled in two different ways:</p>
+            <ul>
+                <li>Nearest Neighbor</li>
+                <li>Bilinear Interpolation</li>
+            </ul>
+            <p>I will talk more about filling in the gaps later.</p>
+            <p>With the ability to skip \(n\) pixels, I can pixelate the image into \(n + 2\) by \(n + 2\) chunks (middle). This reduces the number of calculations by a factor of up to \((n+1)^2\). I justify this with the following scary calculus maths, where \(x^2\) is the total number of pixels and \({\lceil \frac{x}{n+1} \rceil}^2\) is the total number of pixels when skipping every \(n\) pixels:
+                \[\lim_{x \to \infty} \frac {x^2}{{\lceil {x \over {n+1}} \rceil}^2} = \lim_{x \to \infty} \frac {x^2}{{ ({x \over {n+1}}  + \delta) }^2} = \lim_{x \to \infty} \frac {x^2}{{ ({{x+\delta(n+1)} \over {n+1}}) }^2}\]
+                \[= \lim_{x \to \infty} \frac {x^2(n+1)^2}{{({x+\delta(n+1)}) }^2} = (n+1)^2 \cdot \lim_{x \to \infty} \frac {x^2}{{({x+\delta(n+1)}) }^2} \]
+                \[= (n+1)^2 \cdot \lim_{x \to \infty} \frac {x^2}{{({x \cdot (1+\frac{\delta(n+1)}{x}})) }^2} \]
+                \[= (n+1)^2 \cdot \lim_{x \to \infty} \frac {1}{{ (1+\frac{\delta(n+1)}{x}) }^2} = (n+1)^2 \cdot \frac{1}{1^2}\]
+                \[= (n+1)^2\]
+            </p>
+            <p>For example, by skipping every other pixel, I reduce the number of calculations by a factor of \((1+1)^2 = 2^2 = 4\) as the image size approaches infinity.</p>
+            <p>In an attempt to speed things up without sacrificing quality, I took my new ability to pixelate the image into \(n + 2\) by \(n + 2\) chunks and added functionality to recursively subdivide chunks near regions of high complexity (bottom). This ended up making things <b>slower</b>, but it looks cool, especially when color is used.</p>
+        </div>
+    </div>
+
+    <div class="text-and-pic">
+        <div class="column-text">
+            <h2>Coloring Techniques</h2>
+            <p>My simplest coloring technique is monochromatic. For each pixel, or chunk of pixels, I calculate a complexity value. This value is the number of iterations it took for the point to escape the set divided by the maximum number of iterations. Thus, this complexity value ranges from 0 to 1. For points that do not escape after the maximum number of iterations, the complexity is defined to be 1. The complexity value does not increase linearly as you approach the boundary of the set, so it is useful for aesthetic reasons to use the square root of the complexity value. I multiply this value by 255 and type cast it to an unsigned char (top).</p>
+            <p>For my second coloring technique, I take the previously described square root of the complexity value and rescale it to range from 0 to 360. I pretend that this new value is the hue and value of an HSV color with a saturation of 1. Finally, I convert this constructed HSV color to an RGB color (middle).</p>
+            <p>My third coloring technique, the one shown in the nine videos at the start, is a subtle variation of my second coloring technique. After I construct the HSV color and convert it to an RGB color (middle), I then pretend that the RGB color is an LAB color and convert it to an RGB color (bottom).</p>
+            <p>This third coloring technique produces both smooth gradients between some colors, and sharp bands between others. The reason it produces sharp bands is caused by negative values produced in the final LAB to RGB being type casted to unsigned chars (I think).</p>
+            <p>This <i>could</i> be seen as a bug, but because I found the problem and chose to keep it for aesthetic reasons, I consider it a <i>surprise feature</i>.</p>
+        </div>
+        <div class="column-pic">
+            <img src="images/mono_example.png">
+            <img src="images/hsv_example.png">
+            <img src="images/lab_example.png">
+        </div>
+    </div>
+
+    <div class="text-and-pic">
+        <div class="column-pic">
+            <img src="images/filtering_no_skip.png">
+            <img src="images/filtering_03_skip_gaps.png">
+            <img src="images/filtering_03_skip_no_gaps.png">
+            <img src="images/filtering_03_skip_bilinear_interpolation.png">
+        </div>
+        <div class="column-text">
+            <h2>Reconstruction Techniques</h2>
+            <p>If I skip 0 pixels, no reconstruction is applied to the image. There are no gaps to fill, so reconstruction is not necessary (top).</p>
+            <p>If I skip \(n \gt 0\) pixels, there will be gaps in the image that need to be filled (second).</p>
+            <p>I can fill these gaps two different ways:</p>
+            <ul>
+                <li>Nearest Neighbor (third)</li>
+                <li>Bilinear Interpolation (bottom)</li>
+            </ul>
+            <p>With nearest neighbor, I fill in an \((n + 2)\) by \((n + 2)\) chunk with the color of the top left pixel in the chunk. This fills in the gaps between pixels with a uniform color, giving the image a blocky appearance (third).</p>
+            <p>Bilinear interpolation is interesting. The way I implement it is fairly straightforward. Given the following:</p>
+            <ul>
+                <li>the current pixel \(\vec{p}\)</li>
+                <li>the known colors \(c_{tl}\), \(c_{tr}\), \(c_{bl}\), \(c_{br}\) at pixels \(\vec{p}_{tl}\), \(\vec{p}_{tr}\), \(\vec{p}_{bl}\), \(\vec{p}_{br}\)</li>
+                <li>the vertical distance \(v\) between \(\vec{p}\) and \(\vec{p}_{tl}\)</li>
+                <li>the horizontal distance \(u\) between \(\vec{p}\) and \(\vec{p}_{tl}\)</li>
+            </ul>
+            </p>
+            <p>I can calculate an interpolated color between the known surrounding four pixel colors this way, where \(c_{f}\) is the interpolated color:
+                \[c_{f} = v \cdot (c_{bl} \cdot (1 - u) + c_{br} \cdot u)\]
+                \[+ (1 - v) \cdot (c_{tl} \cdot (1 - u) + c_{tr} \cdot u)\]
+            </p>
+            <p>This color \(c_{f}\) is used to color the pixel \(\vec{p}\) (bottom).</p>
+            <p>When the image is reconstructed using square chunks of different sizes, my images using bilinear interpolation look odd. This is because color values are changing at different rates for each chunk size.</p>
+            <p>I will showcase an image like this in <b>The Gallery</b> section.</p>
+        </div>
+    </div>
+    <div class="full-text">
+        <h2>Building the Program</h2>
+        <p>All of these images come from a single program I wrote in C++ called <i>mandelbrot</i>. There are several make targets that build the program in specific ways:</p>
+        <ul>
+            <li><b>default</b>: build for viewing/saving monochromatic images</li>
+            <li><b>color</b>: build for viewing/saving full-color images using the third coloring technique described previously</li>
+            <li><b>slow</b>: build for viewing/saving monochromatic images using long doubles for more precision (no difference?)</li>
+            <li><b>movie</b>: build for rendering a sequence of 1800 images each with increasing iterations</li>
+            <li><b>pic</b>: build for saving a single full-color image</li>
+            <li><b>vid</b>: build movie target, convert PPMs to PNGs with magick, and create a 30 second MP4 using ffmpeg (requires magick and ffmpeg)</li>
+            <li><b>clean</b>: remove <i>mandelbrot</i> and all PPMs/PNGs</li>
+        </ul>
+    </div>
+    <div class="full-text">
+        <h2>Using the Program</h2>
+        <p>Depending on how the program was built, it can be used in different ways:</p>
+        <ul>
+            <li><b>default/color/slow</b>: Explore the Mandelbrot Set
+            <ul>
+                <li><b>Run Using:</b><i> ./mandelbrot</i></li>
+                <li><b>W/A/S/D</b>: Move Up, Left, Down, and Right</li>
+                <li><b>Q/E</b>: Zoom Out and Zoom In</li>
+                <li><b>R</b>: Decrease Image Resolution (Increases Number of Iterations)</li>
+                <li><b>F</b>: Increase Image Resolution (Decreases Number of Iterations)</li>
+                <li><b>G</b>: Toggle Adaptive Pixel Skip (Chunk Subdividing Drawing Technique)</li>
+                <li><b>B</b>: Toggle Bilinear Interpolation</li>
+                <li><b>O</b>: Write Current Window to <i>out.png</i>.</li>
+            </ul>
+            <li><b>movie/pic/vid</b>: Write a PPM / Sequence of PPMs (Please don't use these make targets. These were only used to make the high(ish)-resolution images in this report.)</li>
+        </ul>
+    </div>
+    <div class="full-text">
+        <h2>Known Problems</h2>
+        <p>Some of these are genuine problems. Others are problems that I have chosen to keep because they are entertaining.</p>
+        <ul>
+            <li><b>Floating-Point Precision</b>
+                <ul>
+                    <li>I hoped to be able to zoom in farther. However, the numbers are so very tiny. To zoom in further, I would need some kind of float with arbitrary precision.</li>
+                    <li>I did a bit of research and fairly quickly came to the conclusion that writing my own arbitrarily-precise floating-point number class is not something I can just do.</li>
+                    
+                </ul>
+            </li>
+            <li><b>Negative Color Values</b>
+                <ul>
+                    <li>During my LAB to RGB conversion, floating-point numbers are converted to unsigned chars, despite the fact that these floating-point values can be negative.</li>
+                    <li>This gives a mixture of smooth gradients, where everything works nicely, and sharp boundaries, where negative values lose their signedness. This is my best guess as to what is happening, but I have heard that converting between LAB and RGB with unsigned chars is a thing, so I might be wrong here.</li>
+                    <li>I am pleased with the fun resulting colors, so it stays!</li>
+                </ul>
+            </li>
+            <li><b>Adaptive Pixel Skip Quads</b>
+                <ul>
+                    <li>When adaptive pixel skip is enabled, there are many 2 by 2 chunks of the same color, despite having their own positions.</li>
+                    <li>Basically, there appear to be chunks twice as large as they actually are because there is a square of four of all the same color.</li>
+                    <li>I have no idea what is happening here. It's difficult for me to even describe the problem. Therefore, I consider this a <i>surprise feature</i> (fun!).</li>
+                </ul>
+            </li>
+            <li><b>Zooming Too Fast</b>
+                <ul>
+                    <li>If you go crazy with the zoom, zooming in or zooming out as fast as you can, the program may not be able to adjust the number of iterations fast enough to keep things running smoothly.</li>
+                    <li>This can lock up the program, but I think it's mostly <i>your fault</i>. Don't be so hasty!</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="full-text">
+        <h2>The Future</h2>
+        <p>I am unhappy with how slow my program is. It runs on a single thread, on a single core. This was something I knew, and something I did experiment with, but I was not yet able to get multi-threading functional.</p>
+        <p>In the beginning, I planned to implement cubic interpolation, as well, but the project was already getting really big, especially when I added dynamic pixel skipping.</p>
+        <p>Dynamic pixel skipping was a huge time sink. My first idea was to allow non-square chunks, creating a kind of voronoi pattern. This ended up being an absolute nightmare, and I scrapped the idea of non-square chunks in a couple of days. I finally got square chunks to subdivide properly, but it took a lot longer than I thought it would. This was the most difficult part of the project for me.</p>
+    </div>
+    <div class="full-text">
+        <h2>The Gallery</h2>
+        <img src="images/gallery_01.png">
+        <div class="pic-side-by-side">
+            <img src="images/gallery_02.png">
+            <div class="pic-top-on-bottom">
+                <img src="images/gallery_03.png">
+                <img src="images/gallery_04.png">
+            </div>
+        </div>
+        <div class="pic-side-by-side">
+            <div class="pic-top-on-bottom">
+                <img src="images/gallery_05.png">
+                <img src="images/gallery_07.png">
+            </div>
+            <div class="pic-top-on-bottom">
+                <img src="images/gallery_06.png">
+                <img src="images/gallery_08.png">
+            </div>
+        </div>
+        <img src="images/gallery_09.png">
+        <img src="images/gallery_10.png">
+    </div>
+</body>
+</html>
