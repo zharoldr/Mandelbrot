@@ -4,7 +4,7 @@ Created by Zachary Russ
 
 ## Build Targets
 
-Please do not use **movie**, **vid**, or **pic**. These were used to create the images and video seen in the project report. They require a certain directory structure, as well as a few dependencies.
+Please do not use **movie**, **vid**, or **pic**. These were used to create the images and videos seen in the project report. They require a certain directory structure, as well as a few dependencies.
 
 - **default**: build for viewing/saving monochromatic images
 - **color**: build for viewing/saving full-color images using the third coloring technique described previously
